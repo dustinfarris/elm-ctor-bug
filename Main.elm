@@ -61,7 +61,7 @@ update msg model =
 
         CreatePerson ->
             let
-                ( people, ids ) =
+                people =
                     model.people
                         |> addPeople [ (Person model.newId model.newName) ]
             in
@@ -85,20 +85,19 @@ mergePeople newPerson maybeOldPerson =
 {-| Combine two lists of Person, return the combined list and a list
     of ids that were upserted.
 -}
-addPeople : List Person -> Dict String Person -> ( Dict String Person, List String )
+addPeople : List Person -> Dict String Person -> Dict String Person
 addPeople newPeople currentPeople =
     let
-        ( people, ids ) =
+        people =
             newPeople
                 |> List.foldl
-                    (\person ( people_____, ids ) ->
-                        ( Dict.update person.id (mergePeople person) people
-                        , person.id :: ids
-                        )
+                    (\person acc ->
+                        people
+                            |> Dict.update person.id (mergePeople person)
                     )
-                    ( currentPeople, [] )
+                    currentPeople
     in
-        ( people, ids )
+        people
 
 
 
